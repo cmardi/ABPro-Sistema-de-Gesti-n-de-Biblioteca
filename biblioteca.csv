@@ -1,0 +1,19 @@
+
+id,titulo,autor,estado
+1,Cien Años de Soledad,Gabriel García Márquez,disponible
+2,Don Quijote de la Mancha,Miguel de Cervantes,disponible
+3,1984,George Orwell,disponible
+4,Crimen y Castigo,Fiódor Dostoyevski,disponible
+5,Matar a un Ruiseñor,Harper Lee,disponible
+6,El Amor en los Tiempos del Cólera,Gabriel García Márquez,disponible
+7,Rayuela,Julio Cortázar,disponible
+8,Orgullo y Prejuicio,Jane Austen,disponible
+9,La Odisea,Homero,disponible
+10,El Gran Gatsby,F. Scott Fitzgerald,disponible
+
+id,nombre
+1,Felipe González
+2,Juan Silva
+3,Carlos Mamani
+4,Diego Aedo
+5,Martin González
