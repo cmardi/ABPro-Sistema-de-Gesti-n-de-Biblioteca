@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from datetime import datetime
+import itertools
 
 
 class LibroNoDisponibleError(Exception):
@@ -19,10 +21,18 @@ class LibroNoEncontradoEnUsuarioError(Exception):
     pass
 
 
+@dataclass
 class Usuario:
-    def __init__(self, id, nombre):
-        self._id = id
+    _id = itertools.count(1)
+    contador_usuario = 0
+
+    def __init__(self, nombre):
+        self._id = next(Usuario._id)
         self._nombre = nombre
+        Usuario.contador_usuario += 1
+
+    def __str__(self):
+        return f"Usuario {self._id} - {self._nombre}"
 
     @property
     def id(self):
@@ -36,14 +46,10 @@ class Usuario:
     def validar_id_usr(idValidacion):
         return idValidacion.isdigit()
 
-    @classmethod
-    def contar_usuario(cls):
-        pass
-
 
 class Lector(Usuario):
-    def __init__(self, id, nombre, libros):
-        super().__init__(id, nombre)
+    def __init__(self, nombre, libros):
+        super().__init__(nombre)
         self._libros = libros
 
     def pedir_prestamo(self, libro):
@@ -54,8 +60,8 @@ class Lector(Usuario):
 
 
 class Administrador(Usuario):
-    def __init__(self, id, nombre):
-        super().__init__(id, nombre)
+    def __init__(self, nombre):
+        super().__init__(nombre)
 
     @staticmethod
     def agregar_libros(libro):
@@ -155,12 +161,19 @@ class Inventario:
             print(f"Error al guardar el prestamo: {e}")
 
 
-inventario = Inventario()
-libro = Libro(1, "arroz", "arrocera", "prestado")
-prestamo = Prestamo(2, 4, "ayer", "hoy")
-inventario.agregar_prestamo(prestamo)
-print(inventario.prestamos)
-inventario.agregar_libro(libro)
-print(inventario.libros)
-inventario.guardar_libro()
-inventario.guardar_prestamo()
+# inventario = Inventario()
+# libro = Libro(1, "arroz", "arrocera", "prestado")
+# prestamo = Prestamo(2, 4, "ayer", "hoy")
+# inventario.agregar_prestamo(prestamo)
+# print(inventario.prestamos)
+# inventario.agregar_libro(libro)
+# print(inventario.libros)
+# inventario.guardar_libro()
+# inventario.guardar_prestamo()
+
+usuario1 = Usuario("jon")
+usuario2 = Usuario("juan")
+usuario3 = Usuario("!")
+# lector1=Lector("jon","")
+print(Usuario.contador_usuario)
+print(f"{usuario1},{usuario2}")
