@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 import csv
 
 @dataclass
@@ -54,13 +55,13 @@ class Lector(Usuario):
         return self.libros_prestados
 
     #Metodos de Instancia
-    def tomar_libro(self, libro: Libro):
+    def tomar_libro(self, libro: 'Libro'):
         if libro.estado == 'prestado':
             raise LibroNoDisponibleError(f"El libro {libro.titulo} no está disponible.")
         libro.estado = 'prestado'
-        self.libros_prestados.append(libro: Libro)
+        self.libros_prestados.append(libro)
         
-    def devolver_libro(self, libro: Libro):
+    def devolver_libro(self, libro: 'Libro'):
         if libro not in self.libros_prestados:
             raise ValueError(f"No puedes devolver un libro que no has tomado.")     #Eliminar de la lista de libros prestados(Lector)
         libro.estado = 'disponible'
@@ -71,7 +72,7 @@ class Lector(Usuario):
 
 class Administrador(Usuario):
     @staticmethod
-    def agregar_libro(libro: Libro, libros):
+    def agregar_libro(libro: 'Libro', libros):
         libros.append(libro)    #Logica para agregar Libro
         
     @staticmethod
@@ -107,30 +108,57 @@ class Libro:
         autor = str
         _estado: str = field(default='disponible', init = False)
         
-    @property
-    def estado(self):
-        return self._estado
+        @property
+        def estado(self):
+            return self._estado
     
-    @estado.setter
-    def estado(self, nuevo_estado):
-        if nuevo_estado not in ['disponible', 'prestado']:
-            raise ValueError(f"El estado debe ser 'disponible'  o 'prestado'.")
-        self._estado = nuevo_estado
+        @estado.setter
+        def estado(self, nuevo_estado):
+            if nuevo_estado not in ['disponible', 'prestado']:
+                raise ValueError(f"El estado debe ser 'disponible'  o 'prestado'.")
+            self._estado = nuevo_estado
     
-    @classmethod    
-    def contar_libros(libros):
-        return sum(1 for libro in libros if libro.estado == 'disponible')
+        @classmethod    
+        def contar_libros(libros):
+            return sum(1 for libro in libros if libro.estado == 'disponible')
         
-    #Metodos Dunder de Libro
+        #Metodos Dunder de Libro
+        def __str__(self):
+            return f"{self.titulo} por {self.autor}, Estado: {self.estado}"
+        def __repr__(self):
+            return f"Libro(id={self.id}, titulo={self.titulo} autor={self.autor}, estado={self.estado})"
+    
+@dataclass    
+class Prestamo:
+    lector: 'Lector'
+    libro: 'Libro'
+    fecha_prestamo: datetime = field(default=None, init=False)
+    _fecha_devolucion: datetime = field(default=None, init=False)
+    
+    @property
+    def fecha_devolucion(self):
+        return self._fecha_devolucion       #Devuelve la fecha de devolución
+    
+    @fecha_devolucion.setter
+    def fecha_devolucion(self, nueva_fecha: datetime):
+        if nueva_fecha < self.fecha_prestamo:
+            raise ValueError(f"La fecha de devolución no puede ser anterior a la fecha de préstamo.")
+        self._fecha_devolucion = nueva_fecha
+    
+    def registrar_prestamo(self):
+        self.libro.estado = 'prestado'
+        print(f"Préstamo registrado: {self.lector.nombre} ha tomado '{self.libro.titulo}' el {self.fecha_prestamo}.")
+        
+    def devolver_libro(self):
+        if self.libro.estado == 'disponible':
+            raise ValueError(f"El libro '{self.libro.titulo}' ya está disponible.")
+        self.fecha_devolucion = datetime.now()         # Establece la fecha de devolución a la fecha actual
+        self.libro.estado = 'disponible'            # Cambia el estado del libro a disponible
+        print(f"El libro '{self.libro.titulo}' ha sido devuelto el {self.fecha_devolucion}.")
+    
     def __str__(self):
-        return f"{self.titulo} por {self.autor}, Estado: {self.estado}"
-    def __repr__(self):
-        return f"Libro(id={self.id}, titulo={self.titulo} autor={self.autor}, estado={self.estado})"
+        return (f"Préstamo de '{self.libro.titulo}' a {self.lector.nombre} "
+                f"desde {self.fecha_prestamo} hasta {self.fecha_devolucion if self.fecha_devolucion else 'en curso'}")
     
     
-class Prestamo():
-    pass
-class LibroNoDisponibleError(Exception):
-    pass
-class LibroNoEncontradoError(Exception):
-    pass
+        
