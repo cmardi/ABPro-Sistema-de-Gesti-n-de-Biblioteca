@@ -2,6 +2,17 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import csv
 
+class LibroNoDisponibleError(Exception):
+    """Excepción lanzada cuando un lector intenta tomar un libro que ya está prestado."""
+    def __init__(self, mensaje):
+        super().__init__(mensaje)
+
+class LibroNoEncontradoError(Exception):
+    """Excepción lanzada cuando se intenta buscar o gestionar un libro que no está registrado en el sistema."""
+    def __init__(self, mensaje):
+        super().__init__(mensaje)
+
+
 @dataclass
 class Usuario:
     nombre : str
